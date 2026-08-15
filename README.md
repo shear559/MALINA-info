@@ -4,10 +4,6 @@
 
 Live: **https://malina-pi.vercel.app**
 
-<p align="center">
-  <img src="assets/preview.webp" alt="MALINA — the live site" width="100%">
-</p>
-
 ## Why the storefront is hand-written static HTML
 
 Two dozen flat HTML pages, one 168 KB stylesheet, a ~1,500-line `shop.js`, and a `data.js` catalogue of 31 entries across 8 categories. No framework, no bundler, no storefront platform: Vercel serves the files as committed. Cart, wishlist, coupon and gift state live in `localStorage`; checkout has no payment gateway and builds a `wa.me` deep link carrying only the order details, so card data never touches the site. That link still points at the `972500000000` placeholder: the merchant's real number has to be set before it routes a live order. Nothing invalidates caches for you, so every asset reference carries a manual cache-buster (`?v=41` today) bumped across every file in one commit.
