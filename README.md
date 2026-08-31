@@ -10,13 +10,13 @@ Live: **https://malina-pi.vercel.app**
 
 ## Why the storefront is hand-written static HTML
 
-Two dozen flat HTML pages, one 168 KB stylesheet, a ~1,500-line `shop.js`, and a `data.js` catalogue of 31 entries across 8 categories. No framework, no bundler, no storefront platform: Vercel serves the files as committed. Cart, wishlist, coupon and gift state live in `localStorage`; checkout has no payment gateway and builds a `wa.me` deep link carrying only the order details, so card data never touches the site. That link still points at the `972500000000` placeholder: the merchant's real number has to be set before it routes a live order. Nothing invalidates caches for you, so every asset reference carries a manual cache-buster (`?v=41` today) bumped across every file in one commit.
+27 flat HTML pages, one 168 KB stylesheet, a ~1,500-line `shop.js`, and a `data.js` catalogue of 31 entries across 8 categories, with the coupon rules and store settings kept as data beside them. No framework, no bundler, no storefront platform: Vercel serves the files as committed. Cart, wishlist, coupon and gift state live in `localStorage`; checkout has no payment gateway and builds a `wa.me` deep link carrying only the order details, so card data never touches the site. That link still points at the `972500000000` placeholder: the merchant's real number has to be set before it routes a live order. Nothing invalidates caches for you, so every asset reference carries a manual cache-buster (`?v=41` today) bumped across every file in one commit.
 
 ## Deleting fabricated social proof from markup and structured data
 
 The store used to present numbers nobody had measured: review and customer counts, an "ordered today" counter, a press strip, a return rate, and a catalogue size contradicting its own product data. The worse half was invisible. `product.html` synthesised each product's reviews deterministically from its product id and emitted them as `Review` nodes plus an `AggregateRating` inside the Product JSON-LD: invented ratings handed to search engines as fact.
 
-It came out as a *feature removal*, not a copy edit: the star chip, the rating filters, the "high rating" sort branch, the review section and form, the live-viewer counter, and the `rating` / `reviews` fields on every product. `assets/data.js` now holds no `rating` or `reviews` key, and product JSON-LD emits `Product`, `Offer`, `MerchantReturnPolicy` and `OfferShippingDetails`, with no `AggregateRating` and no `Review` node.
+It came out as a *feature removal*, not a copy edit: the star chip, the rating filters, the "high rating" sort branch, the review section and form, the live-viewer counter, and the `rating` / `reviews` fields on every product. No product in `assets/data.js` carries a `rating` or `reviews` key (a sanitizer strips both if they ever reappear), and product JSON-LD emits `Product`, `Offer`, `MerchantReturnPolicy` and `OfferShippingDetails`, with no `AggregateRating` and no `Review` node.
 
 ## Threading gift state from product page to confirmation
 
@@ -26,7 +26,7 @@ The same statelessness produced a real bug. The coupon was first persisted as a 
 
 ## Hardening the edge and cutting third-party image dependencies
 
-`vercel.json` ships a strict CSP whose `img-src` is `'self' data:`: no third-party image dependency, every photo regenerated on one shared art-direction prompt and stored locally as WebP, replacing a stock-photo CDN. `X-Robots-Tag` is `noarchive` site-wide, reopened for SEO after an earlier blanket block, while cart, checkout, login and account keep `noindex, nofollow, noarchive, nosnippet`.
+`vercel.json` ships a CSP whose `img-src` is `'self' data:`: no third-party image dependency, every photo regenerated on one shared art-direction prompt and stored locally as WebP, replacing a stock-photo CDN. `X-Robots-Tag` is `noarchive` site-wide, reopened for SEO after an earlier blanket block, while cart, checkout, login, account and wishlist keep `noindex, nofollow, noarchive, nosnippet`.
 
 ## How it was verified
 
@@ -42,3 +42,17 @@ A live store with no test harness does not get a ground-up rewrite: two such req
 ## Stack
 
 `HTML` `CSS` `JavaScript`, no framework or build step. `GSAP 3.13` and `Motion 10.18` lazy-loaded from CDN, gated behind `prefers-reduced-motion` and a `@media (scripting: none)` fallback. JSON-LD structured data, a 52-URL sitemap with 24 `<image:image>` entries, and Vercel static hosting with security headers, a custom 404 and a site-wide accessibility widget.
+
+## Screenshots
+
+<p align="center">
+  <img src="assets/shop-grid.webp" alt="Shop page — all 31 products with category and price filters" width="100%">
+</p>
+<p align="center">
+  <img src="assets/product-page.webp" alt="Product page — what's in the box, delivery estimate and sticky add-to-cart" width="100%">
+</p>
+<p align="center">
+  <img src="assets/mobile-home.webp" alt="Home page on a 390px phone" width="45%">
+</p>
+
+Source is private. Built by [@shear559](https://github.com/shear559).
